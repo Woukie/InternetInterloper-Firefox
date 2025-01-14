@@ -3,13 +3,13 @@ css.rel = "stylesheet";
 css.href = browser.runtime.getURL("css/style.css");
 document.head.appendChild(css);
 
-let noteEditorProportion = { x: 0, y: 0 };
+let editorPosition = { x: 0, y: 0 };
 
-let noteEditor = null;
-let noteEditorSpan = null;
-let noteEditorSpanPlaceholder = null;
+let editor = null;
+let editorSpan = null;
+let editorSpanPlaceholder = null;
 
-let movingNoteEditor = false;
+let placingEditor = false;
 
 async function fetchNotes(callback) {
   await fetch("http://localhost:3000/notes/get", {
@@ -43,18 +43,11 @@ async function fetchNotes(callback) {
 
 fetchNotes();
 
-function positionNoteElement(element, proportionX, proportionY) {
-  const screenWidth = window.innerWidth;
-  const screenHeight = window.innerHeight;
-
-  let xPos = screenWidth * proportionX;
-  let yPos = screenHeight * proportionY;
-
-  xPos -= element.clientWidth * proportionX;
-  yPos -= element.clientHeight * proportionY;
+function positionNoteElement(element, proportionX, positionY) {
+  let xPos = (window.innerWidth - element.clientWidth) * proportionX;
 
   element.style.left = `${xPos}px`;
-  element.style.top = `${yPos}px`;
+  element.style.top = `${positionY}px`;
 }
 
 // Move everyting when resizing
@@ -65,76 +58,76 @@ window.addEventListener('resize', () => {
     positionNoteElement(element, element.note.x, element.note.y);
   }
 
-  if (noteEditor) {
-    positionNoteElement(noteEditor, noteEditorProportion.x, noteEditorProportion.y);
+  if (editor) {
+    positionNoteElement(editor, editorPosition.x, editorPosition.y);
   }
 });
 
 // Keep track of mouse position when selecting
 document.addEventListener('mousemove', (event) => {
-  if (movingNoteEditor) {
-    noteEditorProportion = { x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight };
-    positionNoteElement(noteEditor, noteEditorProportion.x, noteEditorProportion.y);
+  if (placingEditor) {
+    editorPosition = { x: event.clientX / window.innerWidth, y: event.clientY + window.scrollY };
+    positionNoteElement(editor, editorPosition.x, editorPosition.y);
   }
 });
 
 function addNote() {
-  if (!noteEditor) {
-    noteEditor = document.createElement("div");
-    noteEditor.id = "interloper-note-editor";
-    noteEditor.className = "interloper-note-editor";
+  if (!editor) {
+    editor = document.createElement("div");
+    editor.id = "interloper-note-editor";
+    editor.className = "interloper-note-editor";
 
-    noteEditorSpan = document.createElement("span");
-    noteEditorSpan.className = "interloper-note-editor-span";
-    noteEditorSpan.contentEditable = "true"; 
+    editorSpan = document.createElement("span");
+    editorSpan.className = "interloper-note-editor-span";
+    editorSpan.contentEditable = "true"; 
     
     // Get rid of the ugly blue border when focused
-    noteEditorSpan.addEventListener('focus', () => {
-      noteEditorSpan.style.outline = "none";
+    editorSpan.addEventListener('focus', () => {
+      editorSpan.style.outline = "none";
     });
 
-    noteEditorSpanPlaceholder = document.createElement("span");
-    noteEditorSpanPlaceholder.className = "interloper-note-editor-span-placeholder";
+    editorSpanPlaceholder = document.createElement("span");
+    editorSpanPlaceholder.className = "interloper-note-editor-span-placeholder";
     
-    noteEditorSpan.addEventListener('input', (e) => {
-      const brs = noteEditorSpan.querySelectorAll('br');
+    editorSpan.addEventListener('input', (e) => {
+      const brs = editorSpan.querySelectorAll('br');
       brs.forEach(br => {
-        if (br.parentNode === noteEditorSpan && noteEditorSpan.childNodes.length === 1) {
+        if (br.parentNode === editorSpan && editorSpan.childNodes.length === 1) {
           br.remove();
         }
       });
 
-      if (noteEditorSpan.textContent !== "") {
-        noteEditorSpanPlaceholder.textContent = "";
+      if (editorSpan.textContent !== "") {
+        editorSpanPlaceholder.textContent = "";
       } else {
-        noteEditorSpanPlaceholder.textContent = "Your message to the world...";
+        editorSpanPlaceholder.textContent = "Your message to the world...";
       }
 
-      positionNoteElement(noteEditor, noteEditorProportion.x, noteEditorProportion.y);
+      positionNoteElement(editor, editorPosition.x, editorPosition.y);
     });
     
-    noteEditor.addEventListener('click', () => {
-      noteEditorSpan.focus();
+    editor.addEventListener('click', () => {
+      editorSpan.focus();
     });
     
-    document.body.appendChild(noteEditor);
-    noteEditor.appendChild(noteEditorSpan);
-    noteEditor.appendChild(noteEditorSpanPlaceholder);
+    document.body.appendChild(editor);
+    editor.appendChild(editorSpan);
+    editor.appendChild(editorSpanPlaceholder);
   }
   
-  noteEditorSpan.textContent = "";
-  noteEditorSpanPlaceholder.textContent = "Click to place...";
-  positionNoteElement(noteEditor, noteEditorProportion.x, noteEditorProportion.y);
-  noteEditor.style.visibility = "visible";
-  movingNoteEditor = true;
+  editorSpan.textContent = "";
+  editorSpanPlaceholder.textContent = "Click to place...";
+  positionNoteElement(editor, editorPosition.x, editorPosition.y);
+  editor.style.visibility = "visible";
+  placingEditor = true;
 }
 
 // Stop tracking after clicking
 document.addEventListener('mousedown', (event) => {
-  if (movingNoteEditor) {
+  if (placingEditor) {
     event.preventDefault();
-    movingNoteEditor = false;
-    noteEditorSpanPlaceholder.textContent = "Your message to the world...";  }
+    placingEditor = false;
+    editorSpanPlaceholder.textContent = "Your message to the world...";  }
 });
 
 // Reset on url changes, this method catches all cases but only updates every second

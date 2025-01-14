@@ -18,7 +18,7 @@
   line-height: 20px;
   cursor: pointer;
 
-  position: fixed;
+  position: absolute;
   background-color: #000084;
 }
 
