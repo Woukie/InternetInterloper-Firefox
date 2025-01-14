@@ -123,7 +123,7 @@ function addNote() {
     noteEditor.appendChild(noteEditorSpanPlaceholder);
   }
   
-  noteEditor.textContent = "";
+  noteEditorSpan.textContent = "";
   noteEditorSpanPlaceholder.textContent = "Click to place...";
   positionNoteElement(noteEditor, noteEditorProportion.x, noteEditorProportion.y);
   noteEditor.style.visibility = "visible";
