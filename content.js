@@ -110,6 +110,8 @@ function addNote() {
       } else {
         noteEditorSpanPlaceholder.textContent = "Your message to the world...";
       }
+
+      positionNoteElement(noteEditor, noteEditorProportion.x, noteEditorProportion.y);
     });
     
     noteEditor.addEventListener('click', () => {
@@ -122,6 +124,7 @@ function addNote() {
   }
   
   noteEditorSpanPlaceholder.textContent = "Click to place...";
+  positionNoteElement(noteEditor, noteEditorProportion.x, noteEditorProportion.y);
   noteEditor.style.visibility = "visible";
   movingNoteEditor = true;
 }
