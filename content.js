@@ -27,7 +27,7 @@ async function fetchNotes(callback) {
         noteElement.note = note;
         noteElement.className = "interloper-note";
     
-        const textElement = document.createElement("p");
+        const textElement = document.createElement("span");
         textElement.innerText = note.text;
     
         positionNoteElement(noteElement, note.x, note.y);
@@ -109,12 +109,58 @@ function addNote() {
     editor.addEventListener('click', () => {
       editorSpan.focus();
     });
+
+    // Close and save buttons
+    const closeButton = document.createElement("button");
+    closeButton.className = "interloper-note-editor-close";
+    // Keep whitespace
+    closeButton.style.whiteSpace = "pre";
+    closeButton.textContent = "X ";
+    closeButton.addEventListener('click', () => {
+      editor.style.visibility = "hidden";
+      placingEditor = false;
+    });
+    
+    const saveButton = document.createElement("button");
+    saveButton.className = "interloper-note-editor-save";
+    saveButton.style.whiteSpace = "pre";
+    saveButton.textContent = "Save ";
+    saveButton.addEventListener('click', () => {
+      if (editorSpan.textContent !== "") {
+        fetch("http://localhost:3000/notes/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            "url": window.location.href,
+            "text": editorSpan.textContent,
+            "x": editorPosition.x,
+            "y": editorPosition.y,
+          }),
+        })
+        .then(() => {
+          editor.style.visibility = "hidden";
+          
+          const noteElements = document.getElementsByClassName("interloper-note");
+          for (let i = 0; i < noteElements.length; i++) {
+            noteElements[i].remove();
+          }
+
+          fetchNotes();
+        })
+        .catch((error) => {
+          console.error("Error adding interloper note: ", error);
+        });
+      }
+    });
     
     document.body.appendChild(editor);
+    editor.appendChild(closeButton);
+    editor.appendChild(saveButton);
     editor.appendChild(editorSpan);
     editor.appendChild(editorSpanPlaceholder);
   }
   
+  editor.style.visibility = "visible";
   editorSpan.textContent = "";
   editorSpanPlaceholder.textContent = "Click to place...";
   positionNoteElement(editor, editorPosition.x, editorPosition.y);
