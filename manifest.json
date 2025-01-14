@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+  "name": "InternetInterloper",
+  "version": "1.0",
+
+  "description": "Leave your mark.",
+
+  "icons": {
+    "48": "icons/48.png"
+  },
+
+  "permissions": [ 
+    "http://localhost/*",
+    "menus",
+    "activeTab",
+    "tabs"
+  ],
+
+  "web_accessible_resources": ["css/style.css", "css/fonts/Fixedsys500c.eot", "css/fonts/Fixedsys500c.otf", "css/fonts/Fixedsys500c.svg", "css/fonts/Fixedsys500c.ttf", "css/fonts/Fixedsys500c.woff"],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false,
+    "type": "module"
+  }
+}
