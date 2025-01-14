@@ -87,7 +87,6 @@ function addNote() {
     noteEditorSpan = document.createElement("span");
     noteEditorSpan.className = "interloper-note-editor-span";
     noteEditorSpan.contentEditable = "true"; 
-    noteEditorSpan.style.whiteSpace = "normal";
     
     // Get rid of the ugly blue border when focused
     noteEditorSpan.addEventListener('focus', () => {

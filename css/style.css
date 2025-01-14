@@ -8,6 +8,7 @@
 
 .interloper-note,
 .interloper-note-editor {
+  z-index: 1000000;
   margin: 0 0 20px;
   padding: 0 9px;
   font-size: 18px;
@@ -21,10 +22,8 @@
   background-color: #000084;
 }
 
-.interloper-note-editor {
-}
-
 .interloper-note-editor-span {
+  white-space: normal;
 }
 
 .interloper-note-editor-span-placeholder {
