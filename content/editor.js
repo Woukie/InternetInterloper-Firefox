@@ -72,20 +72,14 @@ export function getEditorElement() {
       placingEditor = false;
       editorPlaceholderElement.textContent = "Your message to the world...";
       updateEditorPosition();
+      editorInputElement.focus();
     }
   });
 
   // Close on escape
   document.addEventListener('keydown', (event) => {
     if (event.key === "Escape") {
-      exitPlacementMode();
-    }
-  });
-  
-  // Close on click outside
-  document.addEventListener('click', (event) => {
-    if (placingEditor && !editorElement.contains(event.target)) {
-      exitPlacementMode();
+      closeEditor();
     }
   });
 
@@ -94,7 +88,7 @@ export function getEditorElement() {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       editorInputElement.blur();
-      exitPlacementMode();
+      closeEditor();
       reloadNotes();
     }
   });
@@ -115,8 +109,7 @@ export function enterPlacementMode() {
   placingEditor = true;
 }
 
-export function exitPlacementMode() {
+export function closeEditor() {
   placingEditor = false;
-  editorInputElement.focus();
   editorElement.style.visibility = "hidden";
 }
