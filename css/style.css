@@ -7,9 +7,7 @@
 }
 
 .interloper-note,
-.interloper-note-editor,
-.interloper-note-editor-close, 
-.interloper-note-editor-save {
+.interloper-editor {
   z-index: 1000000;
   margin: 0 0 20px;
   padding: 0 9px;
@@ -24,22 +22,11 @@
   background-color: #000084;
 }
 
-.interloper-note-editor-span {
-  white-space: normal;
+.interloper-editor-span,
+.interloper-editor-placeholder {
+  white-space: nowrap;
 }
 
-.interloper-note-editor-span-placeholder {
+.interloper-editor-placeholder {
   color: #999;
-}
-
-/* FIX they have 0 width? */
-.interloper-note-editor-close, 
-.interloper-note-editor-save {
-  position: initial;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  width: auto;
 }

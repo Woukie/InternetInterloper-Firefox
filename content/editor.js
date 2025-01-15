@@ -1,52 +1,5 @@
-function positionElement(element, proportionX, positionY) {
-  let xPos = (window.innerWidth - element.clientWidth) * proportionX;
-
-  element.style.left = `${xPos}px`;
-  element.style.top = `${positionY}px`;
-}
-
-// Load notes from the server and clear existing notes
-async function reloadNotes() {
-  await fetch("http://localhost:3000/notes/get", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ "url": window.location.href }),
-  })
-  .then((response) => response.json())
-  .then((data) => {
-      JSON.parse(data).forEach((note) => {
-        const noteElement = document.createElement("div");
-        noteElement.onclick = () => {
-          noteElement.remove();
-        };
-        noteElement.note = note;
-        noteElement.className = "interloper-note";
-        document.getElementById("interloper-note-" + note.id)?.remove();
-        noteElement.id = "interloper-note-" + note.id;
-        noteElement.title = note.user.username + "#" + note.user.id + " at " + new Date(note.createdAt).toLocaleString();
-    
-        const textElement = document.createElement("span");
-        textElement.innerText = note.text;
-    
-        positionElement(noteElement, note.x, note.y);
-        
-        document.body.appendChild(noteElement);
-        noteElement.appendChild(textElement);
-      });    
-    })
-    .catch((error) => {
-      console.error("Error getting interloper notes: ", error);
-    });
-}
-
-// Reposition all notes
-function updateNotePositions() {
-  const noteElements = document.getElementsByClassName("interloper-note");
-  for (let i = 0; i < noteElements.length; i++) {
-    let noteElement = noteElements[i];
-    positionElement(noteElement, noteElement.note.x, noteElement.note.y);
-  }
-}
+import { reloadNotes } from "./notes";
+import { positionElement } from "./positioning";
 
 let editorPosition = { x: 0, y: 0 };
 
@@ -57,7 +10,7 @@ let editorPlaceholderElement = null;
 let placingEditor = false;
 
 // Create editor element if it doesn't exist
-function getEditorElement() {
+export function getEditorElement() {
   if (editorElement) {
     return editorElement;
   }
@@ -147,13 +100,13 @@ function getEditorElement() {
   });
 }
 
-function updateEditorPosition() {
+export function updateEditorPosition() {
   if (editorElement) {
     positionElement(editorElement, editorPosition.x, editorPosition.y);
   }
 }
 
-function enterPlacementMode() {
+export function enterPlacementMode() {
   getEditorElement();
   editorElement.style.visibility = "visible";
   editorInputElement.textContent = "";
@@ -163,29 +116,7 @@ function enterPlacementMode() {
   placingEditor = true;
 }
 
-function exitPlacementMode() {
+export function exitPlacementMode() {
   placingEditor = false;
   editorElement.style.visibility = "hidden";
-}
-
-function injectCSS() {
-  const css = document.createElement("link");
-  css.rel = "stylesheet";
-  css.href = browser.runtime.getURL("css/style.css");
-  document.head.appendChild(css);
-}
-
-// Init
-injectCSS();
-reloadNotes();
-
-// Move notes and editor when resizing
-window.addEventListener('resize', () => {
-  updateNotePositions();
-  updateEditorPosition();
-});
-
-// Triggered by background
-function addNote() {
-  enterPlacementMode();
 }
