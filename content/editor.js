@@ -111,12 +111,12 @@ export function enterPlacementMode() {
   editorElement.style.visibility = "visible";
   editorInputElement.textContent = "";
   editorPlaceholderElement.textContent = "Click to place...";
-  editorInputElement.focus();
   updateEditorPosition();
   placingEditor = true;
 }
 
 export function exitPlacementMode() {
   placingEditor = false;
+  editorInputElement.focus();
   editorElement.style.visibility = "hidden";
 }
