@@ -123,6 +123,13 @@ function getEditorElement() {
     }
   });
 
+  // Close on input blur
+  editorInputElement.addEventListener('blur', () => {
+    if (!placingEditor) {
+      closeEditor();
+    }
+  }); 
+
   // Close on escape
   document.addEventListener('keydown', (event) => {
     if (event.key === "Escape") {
